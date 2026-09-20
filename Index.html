@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ITV Driver Evaluation Test | CSP Abu Dhabi Terminal</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f5;
+            margin: 0;
+            padding: 20px;
+            color: #1e2a3a;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.15);
+            overflow: hidden;
+            padding: 20px 25px 40px 25px;
+            position: relative;
+        }
+        h1 {
+            font-size: 1.8rem;
+            border-left: 6px solid #0066a1;
+            padding-left: 20px;
+            margin: 0 0 10px 0;
+            color: #003057;
+        }
+        .sub {
+            color: #2c6e9e;
+            margin-bottom: 25px;
+            padding-left: 26px;
+            font-weight: 500;
+            border-bottom: 1px solid #cfdfed;
+            padding-bottom: 12px;
+        }
+        .info-bar {
+            background: #f0f7fc;
+            padding: 12px 20px;
+            border-radius: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+            font-weight: 500;
+        }
+        .info-field {
+            background: white;
+            padding: 5px 15px;
+            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .info-field label { font-weight: 600; color: #005a8c; }
+        /* FIX: 16px minimum prevents iOS Safari from force-zooming on input focus */
+        .info-field input {
+            border: 1px solid #bdd4e4;
+            border-radius: 30px;
+            padding: 8px 12px;
+            font-size: 16px;
+            width: 170px;
+        }
+        .nav-palette {
+            background: #f8faff;
+            padding: 14px 18px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+            border: 1px solid #e2edf7;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+        .nav-palette-title {
+            width: 100%;
+            font-size: 0.85rem;
+            color: #004c6e;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .nav-btn {
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid #bdd4e4;
+            background: white;
+            color: #003057;
+            cursor: pointer;
+            min-width: 34px;
+            font-weight: 600;
+            transition: 0.1s;
+        }
+        .nav-btn.answered {
+            background: #e6f4ea;
+            border-color: #2e7d32;
+            color: #2e7d32;
+        }
+        .question-card {
+            background: #ffffff;
+            border: 1px solid #e2edf7;
+            border-radius: 24px;
+            margin-bottom: 22px;
+            padding: 18px 22px;
+            transition: all 0.1s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .q-num {
+            font-weight: 800;
+            background: #eef2fa;
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            color: #004c6e;
+        }
+        .question-text {
+            font-weight: 600;
+            font-size: 1.08rem;
+            margin: 12px 0 6px 0;
+            color: #0a2f44;
+        }
+        .lang-block {
+            background: #f9fafc;
+            padding: 8px 12px;
+            border-radius: 16px;
+            margin: 8px 0 10px 0;
+            font-size: 0.92rem;
+            color: #2c3e4e;
+            border-left: 3px solid #9fc7e0;
+        }
+        .options { margin: 14px 0 5px 25px; }
+        .option {
+            margin: 10px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .option input { margin-top: 3px; transform: scale(1.05); accent-color: #0066a1; }
+        .option label { font-weight: normal; color: #1f3b4c; }
+        /* FIX: 16px minimum on the fill-in-the-blank field too */
+        .fill-input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 30px;
+            border: 1px solid #bbb;
+            font-size: 16px;
+            font-family: inherit;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-top: 35px;
+        }
+        button {
+            background: #0066a1;
+            border: none;
+            color: white;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        button.start-btn {
+            background: #2563eb;
+            padding: 6px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #93c5fd;
+            display: inline-flex;
+            align-items: center;
+            height: 38px;
+        }
+        button.start-btn:hover { background: #1d4ed8; transform: scale(1.01); }
+        button.unlock-btn {
+            background: #d97706;
+            padding: 6px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #fcd34d;
+            display: inline-flex;
+            align-items: center;
+            height: 38px;
+        }
+        button.unlock-btn:hover { background: #b45309; transform: scale(1.01); }
+        button.reset-btn { background: #5f6c7a; }
+        button:hover { background: #004b73; transform: scale(1.01); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .score-area {
+            background: #eef2fa;
+            border-radius: 28px;
+            padding: 20px 25px;
+            margin-top: 30px;
+            font-size: 1.1rem;
+        }
+        .export-status {
+            text-align: center;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        .export-status.pending { color: #8a6d1a; }
+        .export-status.success { color: #2e7d32; }
+        .export-status.error { color: #c62828; }
+        .footer-note {
+            font-size: 0.75rem;
+            text-align: center;
+            margin-top: 25px;
+            color: #5f7f9c;
+        }
+        .signature-disclaimer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 14px 20px;
+            background: #f8faff;
+            border-radius: 40px;
+            border: 1px dashed #8cb3d1;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #004b6e;
+            letter-spacing: 0.3px;
+        }
+        .creator-credit {
+            position: relative;
+            text-align: right;
+            margin-top: 20px;
+            padding-right: 8px;
+            font-size: 0.8rem;
+            color: #9bb7cc;
+            font-weight: 400;
+            letter-spacing: 0.4px;
+            border-top: 1px solid #eaf0f5;
+            padding-top: 18px;
+            opacity: 0.75;
+        }
+        .creator-credit span {
+            background: #f4f8fc;
+            padding: 4px 14px;
+            border-radius: 30px;
+            display: inline-block;
+            font-size: 0.75rem;
+            color: #4c738b;
+        }
+        .creator-credit strong { color: #2a5777; font-weight: 600; }
+        @media (max-width: 700px) {
+            .test-container { padding: 15px; }
+            .question-card { padding: 12px; }
+            .options { margin-left: 5px; }
+            .creator-credit { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="test-container" id="testApp">
+    <h1>🚛 I.T.V. DRIVER EVALUATION TEST</h1>
+    <div class="sub">CSP Abu Dhabi Terminal – Safety &amp; Operational Competency (Random Subset: 30 Questions)</div>
+
+    <div class="info-bar">
+        <div class="info-field"><label>🆔 Employee ID:</label> <input type="text" id="empId" placeholder="Enter ID"></div>
+        <div class="info-field"><label>👤 Driver Name:</label> <input type="text" id="driverName" placeholder="Full Name"></div>
+        <div class="info-field"><label>🏢 Company Name:</label> <input type="text" id="companyName" placeholder="Company"></div>
+        <div class="info-field"><label>📅 Test Date:</label> <input type="date" id="testDate"></div>
+
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <button id="startBtn" class="start-btn">🚀 START TEST</button>
+            <button id="unlockBtn" class="unlock-btn" title="Supervisor PIN-protected unlock tool">🔓 Unlock ID</button>
+            <div class="info-field" style="background: #fff3f3; border: 1px solid #ffcdd2; margin: 0; height: 38px;">
+                <label style="color: #c62828;">⏱️ Time Left:</label>
+                <span id="timerDisplay" style="font-weight: bold; color: #c62828;">30:00</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="qNavPalette" class="nav-palette" style="display:none;"></div>
+
+    <div id="questionsContainer" style="opacity: 0.5; pointer-events: none;">
+        <div style="text-align: center; padding: 40px; color: #5f7f9c; font-weight: 600;">
+            🔒 Please fill in your details above and click "START TEST" to begin evaluation.
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button id="submitBtn" disabled>✅ SUBMIT &amp; GRADE TEST</button>
+        <button id="resetBtn" class="reset-btn">🔄 RESET &amp; NEW TEST</button>
+    </div>
+    <div id="resultArea" class="score-area" style="display: none;">
+        <div id="scoreDisplay" style="font-size: 1.3rem; font-weight: bold; margin-bottom: 10px;"></div>
+        <div id="resultDetails"></div>
+    </div>
+    <div id="exportStatus" class="export-status" style="display:none;"></div>
+
+    <div class="footer-note">⚠️ Read each question carefully. Passing score: 24/30 (80%)</div>
+    <div class="signature-disclaimer">📋 This online assessment does not require any signature</div>
+    <div class="creator-credit">
+        <span>✧ <strong>Created by:</strong> CSPADT ✧</span>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+    const SUPERVISOR_PIN = "2026"; // Change this 4-digit PIN as needed
+
+    /* Google Apps Script endpoint - same one used by the equipment checklists.
+       Results are logged to the shared Sheet and emailed with the PDF attached. */
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzrsHaLTTAGc43bJq2fjWIWRCnG0Nu6zwoUSyw6hP9K8S6XOOmS5mZspUkgF8It2eq2/exec';
+
+    const baseQuestionsBank = [
+        { textEng: "1) What is the allowed maximum speed limit inside the CSP Terminal?", textUrdu: "CSP ٹرمینل کے اندر اجازت کی زیادہ سے زیادہ رفتار کی حد کیا ہے؟", textHindi: "सीएसपी टर्मिनल के अंदर अनुमत अधिकतम गति सीमा क्या है?", options: ["20 KMPH", "15 KMPH", "30 KMPH"], correct: "c", type: "mcq" },
+        { textEng: "2) Is ITV allowed to pass through the pinning station when carrying OOG cargo?", textUrdu: "کیا OOG کارگو لے جانے پر ITV کو پننگ اسٹیشن سے گزرنے کی اجازت ہے؟", textHindi: "क्या ओओजी कार्गो ले जाते समय ITV को पिनिंग स्टेशन से गुजरने की अनुमति है?", options: ["YES", "NO", "MAYBE"], correct: "b", type: "mcq" },
+        { textEng: "3) What is the CSP ADT emergency contact number?", textUrdu: "CSP ADT ہنگامی رابطہ نمبر کیا ہے؟", textHindi: "सीएसपी एडीटी आपातकालीन संपर्क नंबर क्या है?", options: ["800 055 59", "800 559 99", "805 559 99"], correct: "b", type: "mcq" },
+        { textEng: "4) What is the use of Pinning Station?", textUrdu: "پننگ اسٹیشن کا استعمال کیا ہے؟", textHindi: "पिनिंग स्टेशन का क्या उपयोग है?", options: ["Use for removing different kinds of container locks.", "Use for aligning container under crane.", "Use as lashers resting area."], correct: "a", type: "mcq" },
+        { textEng: "5) Is ITV allowed to pass under crane while opening/closing hatch covers or under any suspended load?", textUrdu: "کیا ہیچ کور کھولنے/بند کرتے وقت یا کسی معطل شدہ بوجھ کے نیچے ITV کو کرین کے نیچے سے گزرنے کی اجازت ہے؟", textHindi: "क्या आईटीवी को हैच कवर खोलते/बंद करते समय या किसी निलंबित भार के तहत क्रेन के नीचे से गुजरने की अनुमति है?", options: ["NO", "MAYBE", "YES"], correct: "a", type: "mcq" },
+        { textEng: "6) In case a discharged container found in damage/leaking condition and missed to report by the tally clerk and foreman, to whom you will inform FIRST via radio?", textUrdu: "اگر ڈسچارج شدہ کنٹینر خراب/لیک ہونے کی حالت میں پایا جائے اور ٹیلی کلرک اور فورمین رپورٹ کرنے سے رہ جائیں، تو آپ ریڈیو کے ذریعے سب سے پہلے کس کو مطلع کریں گے؟", textHindi: "यदि कोई डिस्चार्ज कंटेनर क्षतिग्रस्त/रिसाव की स्थिति में पाया जाता है और टैली क्लर्क और फोरमैन द्वारा रिपोर्ट करने से चूक जाता है, तो आप रेडियो संचार के माध्यम से सबसे पहले किसे सूचित करेंगे?", options: ["Stevedoring Supervisor", "ITV Supervisor", "Operations Supervisor"], correct: "b", type: "mcq" },
+        { textEng: "7) What is the yard location for offloading and loading OOG (Out of Gauge) Cargo?", textUrdu: "OOG کارگو کو آف لوڈ اور لوڈ کرنے کے لیے یارڈ کا مقام کیا ہے؟", textHindi: "ओओजी (आउट ऑफ गेज) कार्गो को उतारने और लोड करने के लिए यार्ड स्थान क्या है?", options: ["A1", "E2 & E3", "C9 & D9"], correct: "b", type: "mcq" },
+        { textEng: "8) Which of the following equipment is used for changing the container door direction, if needed?", textUrdu: "اگر ضرورت ہو تو کنٹینر کے دروازے کی سمت تبدیل کرنے کے لیے درج ذیل میں سے کون سا سامان استعمال کیا جاتا ہے؟", textHindi: "आवश्यकता पड़ने पर कंटेनर दरवाजे की दिशा बदलने के लिए निम्नलिखित में से किस उपकरण का उपयोग किया जाता है?", options: ["ECH Machine", "Fixed ARMG", "Reach Stacker Machine"], correct: "b", type: "mcq" },
+        { textEng: "9) What would you do if an OOG cargo was discharged and VMT showed the ARMG yard location for offloading?", textUrdu: "آپ کیا کریں گے اگر کوئی آؤٹ آف گیج کارگو ڈسچارج ہو اور VMT نے ARMG یارڈ کا مقام آف لوڈنگ کے لیے دکھایا؟", textHindi: "यदि एक ओओजी कार्गो को डिस्चार्ज किया गया और वीएमटी ने उतारने के लिए एआरएमजी यार्ड का स्थान दिखाया तो आप क्या करेंगे?", options: ["Stop at back reach, inform vessel controller & ITV supervisor via VHF to get alternate correct location.", "Offload according to the VMT auto generated location.", "All of the above"], correct: "a", type: "mcq" },
+        { textEng: "10) ITVs are strictly exempt from going through the OCR when carrying OOG's and Break-bulk cargos. And should use the OOG/Bypass Lane instead. Is the statement correct?", textUrdu: "کیا بیان صحیح ہے؟ ITVs OOG اور بریک بلک کارگو لے جاتے وقت OCR سے گزرنے سے مستثنیٰ ہیں اور اس کے بجائے OOG/بائی پاس لین استعمال کریں۔", textHindi: "ओओजी और ब्रेक-बल्क कार्गो ले जाते समय आईटीवी को ओसीआर से गुजरने से सख्ती से छूट दी गई है। कथन सही है?", options: ["Not correct", "Maybe", "Correct"], correct: "c", type: "mcq" },
+        { textEng: "11) What is the allowed speed when entering OCR In/Out?", textUrdu: "OCR ان/آؤٹ میں داخل ہونے کی اجازت دی گئی رفتار کیا ہے؟", textHindi: "ओसीआर इन/आउट में प्रवेश करते समय अनुमत गति क्या है?", options: ["30 KMPH", "10 KMPH", "20 KMPH"], correct: "b", type: "mcq" },
+        { textEng: "12) Offloading and loading yard locations may change due to busy yard blocks, so ITV drivers are instructed to always monitor and refresh their VMT and follow instructions. Statement correct?", textUrdu: "کیا بیان صحیح ہے؟ آف لوڈنگ اور لوڈنگ یارڈ کے مقامات تبدیل ہو سکتے ہیں، ITV ڈرائیوروں کو ہدایت کی جاتی ہے کہ وہ ہمیشہ اپنے VMT کی نگرانی کریں اور ہدایات پر عمل کریں۔", textHindi: "क्या कथन सही है?", options: ["Correct", "Maybe", "Not correct"], correct: "a", type: "mcq" },
+        { textEng: "13) What is the purpose of CPS (Chassis Positioning System) in QC and ARMG?", textUrdu: "QC اور ARMG میں CPS (چیسیس پوزیشننگ سسٹم) کا مقصد کیا ہے؟", textHindi: "क्यूसी और एआरएमजी में सीपीएस (चेसिस पोजिशनिंग सिस्टम) का उद्देश्य क्या है?", options: ["To alert driver if any lock on container.", "To precisely align trucks under the crane.", "To display container details."], correct: "b", type: "mcq" },
+        { textEng: "14) In the event of a Loading job in the yard and VMT displays 02x20' containers in different block locations, which part do you need to load first?", textUrdu: "یارڈ میں لوڈنگ جاب کی صورت میں اور VMT مختلف بلاک مقامات پر 02x20' کنٹینرز دکھاتا ہے، آپ کو پہلے کون سا حصہ لوڈ کرنے کی ضرورت ہے؟", textHindi: "यार्ड में लोडिंग कार्य की स्थिति में और वीएमटी विभिन्न ब्लॉक स्थानों पर 02x20' कंटेनर प्रदर्शित करता है, आपको पहले किस हिस्से को लोड करने की आवश्यकता है?", options: ["After and Forward Part", "Forward and After Part", "Only After Part"], correct: "a", type: "mcq" },
+        { textEng: "15) What does V.I. stand for in VMT?", textUrdu: "VMT میں V.I. کا کیا مطلب ہے؟", textHindi: "वीएमटी में वी.आई. का क्या अर्थ है?", options: ["Vessel Interface", "Vessel In", "Vessel Interchange"], correct: "b", type: "mcq" },
+        { textEng: "16) In the event of a Discharging/Offloading job in the yard and VMT displays 02x20' containers in different block locations, which part do you need to offload first?", textUrdu: "یارڈ میں ڈسچارج/آف لوڈنگ جاب کی صورت میں اور VMT مختلف بلاک مقامات پر 02x20' کنٹینرز دکھاتا ہے، آپ کو پہلے کون سا حصہ آف لوڈ کرنا ہوگا؟", textHindi: "यार्ड में डिस्चार्जिंग/ऑफलोडिंग कार्य की स्थिति में और वीएमटी विभिन्न ब्लॉक स्थानों में 02x20' कंटेनर प्रदर्शित करता है, आपको पहले किस हिस्से को उतारने की आवश्यकता है?", options: ["After and Forward Part", "Forward and After Part", "Only Forward Part"], correct: "b", type: "mcq" },
+        { textEng: "17) What colour will indicate on the yard traffic LED light when ITV is entering and passing through the yard RFID portal?", textUrdu: "جب ITV یارڈ RFID پورٹل میں داخل ہو رہا ہو اور گزر رہا ہو تو یارڈ ٹریفک LED لائٹ پر کیا رنگ ظاہر کرے گا؟", textHindi: "जब आईटीवी यार्ड आरएफआईडी पोर्टल में प्रवेश कर रहा है और गुजर रहा है तो यार्ड ट्रैफिक एलईडी लाइट पर कौन सा रंग दिखाई देगा?", options: ["Orange", "Red", "Green"], correct: "c", type: "mcq" },
+        { textEng: "18) What does V.O. stand for in VMT?", textUrdu: "VMT میں V.O. کا کیا مطلب ہے؟", textHindi: "वीएमटी में वी.ओ. का क्या अर्थ है?", options: ["Vessel Outbound", "Vessel Operation", "Vessel Out"], correct: "c", type: "mcq" },
+        { textEng: "19) What is the maximum loading capacity of the ITV Trailer?", textUrdu: "ITV ٹریلر کی زیادہ سے زیادہ لوڈنگ گنجائش کتنی ہے؟", textHindi: "आईटीवी ट्रेलर की अधिकतम लोडिंग क्षमता क्या है?", options: ["80 Tons", "70 Tons", "65 Tons"], correct: "c", type: "mcq" },
+        { textEng: "20) Which of the following equipment is used for Offloading and Loading of OOG cargo in the yard?", textUrdu: "مندرجہ ذیل میں سے کون سا سامان یارڈ میں OOG کارگو کے آف لوڈنگ اور لوڈنگ کے لیے استعمال ہوتا ہے؟", textHindi: "यार्ड में OOG कार्गो को उतारने और लोड करने के लिए निम्नलिखित में से किस उपकरण का उपयोग किया जाता है?", options: ["ECH Machine", "RS (Reach Stacker)", "ARMG crane"], correct: "b", type: "mcq" },
+        { textEng: "21) The ITV VMT screen will turn green when RFID is scanned while entering the yard and ARMG executes the job. Statement correct?", textUrdu: "جب یارڈ میں داخل ہوتے وقت RFID اسکین کیا جاتا ہے اور ARMG کام انجام دیتا ہے تو ITV VMT اسکرین سبز ہو جائے گی۔ کیا بیان صحیح ہے؟", textHindi: "जब यार्ड में प्रवेश करते समय आरएफआईडी स्कैन किया जाता है और एआरएमजी कार्य निष्पादित करता है तो आईटीवी वीएमटी स्क्रीन हरी हो जाएगी।", options: ["Correct", "Not correct", "Maybe"], correct: "a", type: "mcq" },
+        { textEng: "22) During vessel discharging operations, when is the ITV safe to move away from the QC lane?", textUrdu: "برتن ڈسچارجنگ آپریشنز کے دوران، ITV QC لین سے دور جانے کے لیے کب محفوظ ہے؟", textHindi: "जहाज डिस्चार्जिंग परिचालन के दौरान, आईटीवी को क्यूसी लेन से दूर जाना कब सुरक्षित है?", options: ["Once informed by tally clerk.", "Once CPS signal turned green, QC spreader released from container and reached safe height.", "Once informed by ITV Supervisor."], correct: "b", type: "mcq" },
+        { textEng: "23) A 10-minute equipment pre-inspection is mandatory prior to the start of the shift. Statement correct?", textUrdu: "شفٹ شروع ہونے سے پہلے 10 منٹ کا سامان کا پری معائنہ لازمی ہے۔ کیا بیان صحیح ہے؟", textHindi: "शिफ्ट शुरू होने से पहले 10 मिनट का उपकरण पूर्व-निरीक्षण अनिवार्य है। कथन सही है?", options: ["Correct", "Not correct", "Maybe"], correct: "a", type: "mcq" },
+        { textEng: "24) What is the main function of a Saddle Lift Switch?", textUrdu: "سیڈل لفٹ سوئچ کا بنیادی کام کیا ہے؟", textHindi: "सैडल लिफ्ट स्विच का मुख्य कार्य क्या है?", options: ["To Lift and Lower the trailer.", "To increase the air pressure brake.", "To check oil pressure."], correct: "a", type: "mcq" },
+        { textEng: "25) Which control is used to disengage the fifth wheel from its lock position and disconnect the trailer from the ITV?", textUrdu: "کون سا کنٹرول فِفتھ وہیل کو لاک پوزیشن سے الگ کرنے اور ٹریلر کو ITV سے منقطع کرنے کے لیے استعمال ہوتا ہے؟", textHindi: "पांचवें पहिये को उसकी लॉक स्थिति से अलग करने और ट्रेलर को आईटीवी से डिस्कनेक्ट करने के लिए किस नियंत्रण का उपयोग किया जाता है?", options: ["Emergency button", "Fifth wheel release button", "Horn button"], correct: "b", type: "mcq" },
+        { textEng: "26) Basic required P.P.E. are hard helmets, high-visibility vests, safety shoes, and safety gloves. Statement correct?", textUrdu: "بنیادی مطلوبہ P.P.E. سخت ہیلمٹ، ہائی ویزبیلیٹی واسکٹ، سیفٹی جوتے اور سیفٹی دستانے ہیں۔ کیا بیان صحیح ہے؟", textHindi: "बुनियादी आवश्यक पी.पी.ई. कठोर हेलमेट, उच्च दृश्यता वाले जैकेट, सुरक्षा जूते और सुरक्षा दस्ताने हैं।", options: ["Not correct", "Correct", "Maybe"], correct: "b", type: "mcq" },
+        { textEng: "27) QC and ARMG CPS indication lights will turn to what colour once the ITV arrives at the correct lane position?", textUrdu: "ITV کے صحیح لین پوزیشن پر پہنچنے پر QC اور ARMG CPS انڈیکیشن لائٹس کس رنگ میں بدل جائیں گی؟", textHindi: "आईटीवी के सही लेन स्थिति पर पहुंचने पर क्यूसी और एआरएमजी सीपीएस इंडिकेशन लाइटें किस रंग में बदल जाएंगी?", options: ["Orange", "Green", "Red"], correct: "c", type: "mcq" },
+        { textEng: "28) Please fill in the correct yard location/yard area for offloading OOG cargo:", textUrdu: "براہ کرم OOG کارگو آف لوڈنگ کے لیے صحیح یارڈ لوکیشن/یارڈ ایریا لکھیں:", textHindi: "कृपया ओओजी कार्गो उतारने के लिए सही यार्ड स्थान/यार्ड क्षेत्र भरें:", options: [], correct: "E2, E3, A9-D9", type: "fill" },
+        { textEng: "29) Please fill in the correct yard location for Container repair area and Container washing:", textUrdu: "کنٹینر مرمت کے علاقے اور کنٹینر واشنگ کے لیے صحیح یارڈ لوکیشن لکھیں:", textHindi: "कंटेनर मरम्मत क्षेत्र और कंटेनर धुलाई के लिए सही यार्ड स्थान भरें:", options: [], correct: "Maintenance and Repair Area (MNR)", type: "fill" },
+        { textEng: "30) Who will you contact immediately in the event of any emergencies encountered (e.g. fire, first aid, vehicle collision, etc.) inside the terminal?", textUrdu: "ٹرمینل کے اندر کسی بھی ہنگامی صورت حال (مثلاً آگ لگنے، ابتدائی طبی امداد، گاڑی کا تصادم وغیرہ) کی صورت میں آپ فوری طور پر کس سے رابطہ کریں گے؟", textHindi: "टर्मिनल के अंदर किसी भी आपात स्थिति (जैसे आग, प्राथमिक चिकित्सा, वाहन टकराव, आदि) की स्थिति में आप तुरंत किससे संपर्क करेंगे?", options: ["Control Room", "ITV Supervisor", "Stevedoring Supervisor"], correct: "a", type: "mcq" },
+        { textEng: "31) During twin-lift operations (handling two 20-foot containers simultaneously), what is the mandatory safety rule regarding twistlock engagement before the ITV moves away from the QC lane?", textUrdu: "ٹوئن لفٹ آپریشنز کے دوران (ایک ہی وقت میں دو 20 فٹ کنٹینرز کو سنبھالنا)، ITV کے QC لین سے ہٹنے سے پہلے ٹوئسٹ لاک کے بارے میں لازمی حفاظتی اصول کیا ہے؟", textHindi: "ट्विन-लिफ्ट संचालन के दौरान (एक साथ दो 20-फुट कंटेनरों को संभालना), आईटीवी के क्यूसी लेन से दूर जाने से पहले ट्विस्टलॉक जुड़ाव के संबंध में अनिवार्य सुरक्षा नियम क्या है?", options: ["Ensure both containers are fully seated and clear of twistlocks before moving.", "Move immediately if one container is detached to save cycle time.", "Only check the twistlocks if the VMT displays an error code."], correct: "a", type: "mcq" },
+        { textEng: "32) If the QC spreader becomes jammed or stuck to the container twistlocks while landing on your ITV chassis, what action must you take?", textUrdu: "اگر QC اسپریڈر آپ کے ITV چیسیس پر اترتے وقت جام ہو جائے یا کنٹینر کے ٹوئسٹ لاک میں پھنس جائے، تو آپ کو کیا قدم اٹھانا چاہیے؟", textHindi: "यदि आपके आईटीवी चेसिस पर उतरते समय क्यूसी स्प्रेडर जाम हो जाता है या कंटेनर ट्विस्टलॉक में फंस जाता है, तो आपको क्या कार्रवाई करनी चाहिए?", options: ["Drive forward slowly to force-release the container.", "Honk your horn continuously and try to manually unlock it yourself.", "Remain in position, keep brakes applied, and immediately notify the QC operator and ITV supervisor via VHF."], correct: "c", type: "mcq" },
+        { textEng: "33) When transporting dangerous goods (IMDG containers) within the terminal, what is the primary protocol an ITV driver must follow?", textUrdu: "ٹرمینل کے اندر خطرناک سامان (IMDG کنٹینرز) کی نقل و حمل کرتے وقت، ITV ڈرائیور کو کس بنیادی پروٹوکول پر عمل کرنا چاہیے؟", textHindi: "टर्मिनल के भीतर खतरनाक सामान (IMDG कंटेनरों) का परिवहन करते समय, ITV ड्राइवर को किस प्राथमिक प्रोटोकॉल का पालन करना चाहिए?", options: ["Maintain a safe following distance, avoid sudden braking, and adhere strictly to designated hazardous routes.", "Park anywhere in the yard for a short break if needed.", "Bypass the RFID gates to speed up delivery."], correct: "a", type: "mcq" },
+        { textEng: "34) What do the flashing red and green traffic lights under the Quay Crane signify to an approaching ITV driver?", textUrdu: "کوے کرین کے نیچے چمکتی ہوئی سرخ اور سبز ٹریفک لائٹس آنے والے ITV ڈرائیور کو کیا ظاہر کرتی ہیں؟", textHindi: "Quay Crane के नीचे चमकती लाल और हरी ट्रैफिक लाइटें आने वाले ITV ड्राइवर को क्या संकेत देती हैं?", options: ["Red means go, Green means stop.", "Red means stop/do not enter lane; Green means safe to enter and position under the crane.", "Both lights mean you can park your vehicle under the boom."], correct: "b", type: "mcq" },
+        { textEng: "35) While driving an ITV through high-congestion areas near workshop or gate zones where lashers and tally clerks are working, what is your mandatory speed and procedure?", textUrdu: "ورکشاپ یا گیٹ زون کے قریب زیادہ ازدحام والے علاقوں میں جہاں لیشرز اور ٹیلی کلرک کام کر رہے ہوں، ITV چلاتے وقت آپ کی لازمی رفتار اور طریقہ کار کیا ہے؟", textHindi: "वर्कशॉप या गेट ज़ोन के पास अत्यधिक भीड़भाड़ वाले क्षेत्रों में ITV चलाते समय आपकी अनिवार्य गति और प्रक्रिया क्या है?", options: ["Reduce speed to terminal pedestrian/yard limit, sound horn if necessary, and maintain high alertness for blind spots.", "Maintain normal operational speed to keep terminal productivity high.", "Turn off headlights to save battery."], correct: "a", type: "mcq" }
+    ];
+
+    /* FIX: explicit accepted-answer rules for fill-in questions.
+       Replaces the old logic which rejected "MNR" (a stated correct answer)
+       and accepted any text containing "main" (e.g. "main gate"). */
+    const FILL_RULES = {
+        "E2, E3, A9-D9": function (ans) {
+            const a = ans.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const hasE2E3 = a.includes('e2') && a.includes('e3');
+            const hasA9D9 = a.includes('a9') && a.includes('d9');
+            return hasE2E3 || hasA9D9;
+        },
+        "Maintenance and Repair Area (MNR)": function (ans) {
+            const a = ans.toLowerCase();
+            if (/\bmnr\b/.test(a)) return true;
+            if (/\bm\s*&\s*r\b/.test(a)) return true;
+            if (a.includes('maintenance') && a.includes('repair')) return true;
+            if (a.includes('maintenance')) return true;
+            if (a.includes('repair')) return true;
+            return false;
+        }
+    };
+
+    let questionsData = [];
+    let userAnswers = {};
+    let timeLeft = 30 * 60;
+    let timerInterval = null;
+    let isTestActive = false;
+    let focusLossCount = 0;
+    let securityInitialised = false;   // FIX: guards against duplicate listeners
+    const MAX_FOCUS_LOSS_ALLOWED = 1;
+
+    function cleanText(txt) {
+        return txt ? txt.replace(/^\d+[\)\-\.\s]+\s*/, '') : '';
+    }
+
+    function shuffleArray(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    function shuffleAndSubsetQuestions() {
+        let clonedBank = JSON.parse(JSON.stringify(baseQuestionsBank));
+        let shuffledBank = shuffleArray(clonedBank);
+        let subsetQ = shuffledBank.slice(0, 30);
+
+        subsetQ.forEach(q => {
+            if (q.type === 'mcq' && q.options && q.options.length === 3) {
+                const letters = ['a', 'b', 'c'];
+                const correctOriginalIdx = letters.indexOf(q.correct.toLowerCase());
+
+                let pairedOpts = q.options.map((opt, idx) => ({ text: opt, isCorrect: idx === correctOriginalIdx }));
+                pairedOpts = shuffleArray(pairedOpts);
+
+                q.options = pairedOpts.map(p => p.text);
+                const newCorrectIdx = pairedOpts.findIndex(p => p.isCorrect);
+                q.correct = letters[newCorrectIdx];
+            }
+        });
+
+        questionsData = subsetQ;
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        timeLeft = 30 * 60;
+        const timerDisplay = document.getElementById('timerDisplay');
+
+        timerInterval = setInterval(() => {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert("⏰ Time is up! Your test will now be submitted automatically.");
+                gradeTest();
+                lockTestInterface();
+            }
+            timeLeft--;
+        }, 1000);
+    }
+
+    /* FIX: explicitly re-enable every control. The old code only re-enabled a
+       few buttons, so after a timeout/security lockout the ID, Name and Company
+       fields stayed permanently disabled until the page was reloaded. */
+    function enableAllControls() {
+        ['empId', 'driverName', 'companyName', 'testDate'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = false;
+        });
+        ['startBtn', 'unlockBtn', 'resetBtn'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = false;
+        });
+    }
+
+    function initNewQuiz() {
+        isTestActive = false;
+        focusLossCount = 0;
+        clearInterval(timerInterval);
+        timeLeft = 30 * 60;
+        document.getElementById('timerDisplay').textContent = "30:00";
+
+        enableAllControls();
+
+        document.getElementById('empId').value = '';
+        document.getElementById('driverName').value = '';
+        document.getElementById('companyName').value = '';
+
+        shuffleAndSubsetQuestions();
+        userAnswers = {};
+
+        document.getElementById('questionsContainer').innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #5f7f9c; font-weight: 600;">
+                🔒 Please fill in your details above and click "START TEST" to begin evaluation.
+            </div>
+        `;
+        document.getElementById('questionsContainer').style.opacity = '0.5';
+        document.getElementById('questionsContainer').style.pointerEvents = 'none';
+        document.getElementById('qNavPalette').style.display = 'none';
+
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('resetBtn').disabled = false;
+    }
+
+    function renderNavPalette() {
+        const palette = document.getElementById('qNavPalette');
+        palette.style.display = 'flex';
+        palette.innerHTML = '<div class="nav-palette-title">📌 Quick Navigation (Click to Jump):</div>';
+
+        questionsData.forEach((q, idx) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'nav-btn';
+            btn.textContent = idx + 1;
+
+            if (userAnswers[idx] !== undefined && userAnswers[idx] !== "") {
+                btn.classList.add('answered');
+            }
+
+            btn.addEventListener('click', () => {
+                const card = document.querySelector(`.question-card[data-qidx='${idx}']`);
+                if (card) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+
+            palette.appendChild(btn);
+        });
+    }
+
+    function escapeHtml(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('questionsContainer');
+        container.style.opacity = '1';
+        container.style.pointerEvents = 'auto';
+        container.innerHTML = '';
+
+        questionsData.forEach((q, idx) => {
+            const qCard = document.createElement('div');
+            qCard.className = 'question-card';
+            qCard.setAttribute('data-qidx', idx);
+            const qNumber = idx + 1;
+            let optionsHtml = '';
+
+            const engClean = cleanText(q.textEng);
+            const urduClean = cleanText(q.textUrdu);
+            const hindiClean = cleanText(q.textHindi);
+
+            if (q.type === 'mcq') {
+                const letters = ['a', 'b', 'c'];
+                optionsHtml = `<div class="options">` + q.options.map((opt, optIdx) => {
+                    const letter = letters[optIdx];
+                    const isChecked = userAnswers[idx] === letter ? 'checked' : '';
+                    return `<div class="option"><input type="radio" name="q${idx}" value="${letter}" id="q${idx}_${letter}" ${isChecked}><label for="q${idx}_${letter}"><strong>${letter.toUpperCase()})</strong> ${opt}</label></div>`;
+                }).join('') + `</div>`;
+            } else {
+                const val = escapeHtml(userAnswers[idx] || '');
+                optionsHtml = `<div class="options" style="margin-top:12px;"><input type="text" class="fill-input" id="fill_${idx}" value="${val}" placeholder="Type yard location"></div>`;
+            }
+
+            qCard.innerHTML = `
+                <div class="q-num">Question ${qNumber}</div>
+                <div class="question-text">📌 ${engClean}</div>
+                <div class="lang-block">🇵🇰 اردو: ${urduClean}</div>
+                <div class="lang-block">🇮🇳 हिन्दी: ${hindiClean}</div>
+                ${optionsHtml}
+            `;
+            container.appendChild(qCard);
+        });
+        attachInputEvents();
+        renderNavPalette();
+    }
+
+    function attachInputEvents() {
+        questionsData.forEach((q, i) => {
+            if (q.type === 'mcq') {
+                const radios = document.querySelectorAll(`input[name="q${i}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        if (!isTestActive) return;
+                        userAnswers[i] = e.target.value;
+                        renderNavPalette();
+                    });
+                });
+            } else {
+                const inputField = document.getElementById(`fill_${i}`);
+                if (inputField) {
+                    inputField.addEventListener('input', (e) => {
+                        if (!isTestActive) return;
+                        userAnswers[i] = e.target.value.trim();
+                        renderNavPalette();
+                    });
+                }
+            }
+        });
+    }
+
+    document.getElementById('unlockBtn').addEventListener('click', () => {
+        const inputId = document.getElementById('empId').value.trim();
+        if (inputId === "") {
+            alert("⚠️ Please enter the Employee ID in the Employee ID field first.");
+            return;
+        }
+
+        const enteredPin = prompt("🔒 Enter 4-digit Supervisor PIN to unlock ID:");
+        if (enteredPin === null) return;
+
+        if (enteredPin.trim() !== SUPERVISOR_PIN) {
+            alert("❌ Access Denied: Incorrect supervisor PIN.");
+            return;
+        }
+
+        localStorage.removeItem('itv_status_' + inputId);
+        alert(`🔓 Success! Employee ID "${inputId}" has been unlocked and cleared by supervisor.`);
+    });
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+        const inputId = document.getElementById('empId').value.trim();
+        const driverName = document.getElementById('driverName').value.trim();
+        const companyName = document.getElementById('companyName').value.trim();
+
+        if (inputId === "" || driverName === "" || companyName === "") {
+            alert("⚠️ Please fill in all details (Employee ID, Driver Name, and Company Name) before starting the test.");
+            return;
+        }
+
+        const lockoutStatus = localStorage.getItem('itv_status_' + inputId);
+        if (lockoutStatus === 'RE_TRAINING_REQUIRED') {
+            alert("Access Denied: Your profile is flagged for mandatory retraining. Please contact your terminal supervisor.");
+            return;
+        }
+
+        isTestActive = true;
+        focusLossCount = 0;
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('resetBtn').disabled = true;
+
+        renderQuestions();
+        startTimer();
+        initTestSecurity();
+        alert("🚀 Test started! Your 30-minute timer is now running. Stay on this screen.");
+    });
+
+    /* FIX: the listener is now attached only once for the lifetime of the page.
+       Previously a new listener was added on every START, so on a second test a
+       single tab-switch fired several listeners and auto-submitted immediately. */
+    function initTestSecurity() {
+        if (securityInitialised) return;
+        securityInitialised = true;
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden && isTestActive) {
+                focusLossCount++;
+                if (focusLossCount > MAX_FOCUS_LOSS_ALLOWED) {
+                    alert("Security Violation: You have left the test screen multiple times. Your test is now being automatically submitted.");
+                    gradeTest();
+                    lockTestInterface();
+                } else {
+                    alert(`⚠️ Warning (${focusLossCount}/${MAX_FOCUS_LOSS_ALLOWED}): Leaving the test screen is prohibited. If you switch tabs or leave this app again, your test will be automatically submitted.`);
+                }
+            }
+        });
+    }
+
+    function lockTestInterface() {
+        isTestActive = false;
+        clearInterval(timerInterval);
+        document.querySelectorAll('input, button').forEach(el => el.disabled = true);
+        const resetEl = document.getElementById('resetBtn');
+        if (resetEl) resetEl.disabled = false;
+        const unlockEl = document.getElementById('unlockBtn');
+        if (unlockEl) unlockEl.disabled = false;
+    }
+
+    function isAnswerCorrect(q, userAns) {
+        const ans = (userAns || "").trim();
+        if (!ans) return false;
+
+        if (q.type === 'mcq') {
+            return ans.toLowerCase() === q.correct.toLowerCase();
+        }
+        if (ans.toLowerCase() === q.correct.toLowerCase()) return true;
+        const rule = FILL_RULES[q.correct];
+        return rule ? rule(ans) : false;
+    }
+
+    function gradeTest() {
+        isTestActive = false;
+        clearInterval(timerInterval);
+        let score = 0;
+        const rows = [];
+
+        questionsData.forEach((q, i) => {
+            const userAns = (userAnswers[i] || "").trim();
+            const isCorrect = isAnswerCorrect(q, userAns);
+            if (isCorrect) score++;
+
+            let givenAnswerText = userAns || "(no answer)";
+            let correctAnswerText = q.correct;
+
+            if (q.type === 'mcq') {
+                if (userAns) {
+                    const letters = ['a', 'b', 'c'];
+                    const optIdx = letters.indexOf(userAns.toLowerCase());
+                    givenAnswerText = optIdx >= 0 ? `${userAns.toUpperCase()}) ${q.options[optIdx]}` : userAns;
+                }
+                const correctIdx = ['a', 'b', 'c'].indexOf(q.correct.toLowerCase());
+                correctAnswerText = `${q.correct.toUpperCase()}) ${q.options[correctIdx]}`;
+            }
+
+            rows.push({
+                "Q#": i + 1,
+                "Question": cleanText(q.textEng),
+                "Driver Answer": givenAnswerText,
+                "Correct Answer": correctAnswerText,
+                "Result": isCorrect ? "Correct" : "Incorrect"
+            });
+        });
+
+        const total = questionsData.length;
+        const percent = (score / total) * 100;
+        const isPassed = score >= 24;
+        const statusMsg = isPassed ? "PASS" : "FAIL (Retraining Recommended)";
+        const statusColor = isPassed ? '#2e7d32' : '#c62828';
+        const statusBg = isPassed ? '#e6f4ea' : '#fef6f5';
+
+        const companyName = document.getElementById('companyName').value.trim();
+        const driverName = document.getElementById('driverName').value.trim();
+        const empId = document.getElementById('empId').value.trim();
+        const testDate = document.getElementById('testDate').value || new Date().toISOString().split('T')[0];
+
+        document.getElementById('resultArea').style.display = 'block';
+        document.getElementById('scoreDisplay').innerHTML =
+            `📊 <strong>${escapeHtml(driverName)}</strong> (${escapeHtml(companyName)})<br>Score: ${score} / ${total} (${percent.toFixed(1)}%)`;
+
+        const resultContainer = document.getElementById('resultDetails');
+        if (!isPassed) {
+            resultContainer.innerHTML = `
+                <div style="background: #fef6f5; border: 1px solid #fcdbd8; padding: 15px; border-radius: 8px; margin-bottom: 15px; color: #c62828;">
+                    <strong>⚠️ TEST FAILED – MANDATORY RETRAINING REQUIRED</strong><br>
+                    Score is below the 24/30 terminal safety standard. Your profile has been flagged for supervisor review and operational retraining before you are cleared to operate an ITV.
+                </div>
+            `;
+            localStorage.setItem('itv_status_' + empId, 'RE_TRAINING_REQUIRED');
+        } else {
+            resultContainer.innerHTML = `
+                <div style="background: #e6f4ea; border: 1px solid #ceead6; padding: 15px; border-radius: 8px; margin-bottom: 15px; color: #2e7d32;">
+                    <strong>✅ TEST PASSED SUCCESSFULLY</strong><br>
+                    Cleared for terminal operations. Your certificate and log have been successfully processed.
+                </div>
+            `;
+            localStorage.removeItem('itv_status_' + empId);
+        }
+
+        document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        const result = { driverName, companyName, empId, testDate, score, total, percent, statusMsg, rows, statusColor, statusBg };
+
+        exportAndSubmit(result);
+
+        document.getElementById('resetBtn').disabled = false;
+        document.getElementById('submitBtn').disabled = true;
+    }
+
+    function formatDMY(isoDate) {
+        if (!isoDate) return '';
+        const p = String(isoDate).split('-');
+        return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : isoDate;
+    }
+
+    function buildFileName(result, ext) {
+        const clean = (s) => (s || "unknown").replace(/[\\\/:*?"<>|]/g, '').trim();
+        const firstName = clean(result.driverName).split(' ')[0] || "Driver";
+        const empId = clean(result.empId) || "NoID";
+        return `${firstName} - ${empId} - ${formatDMY(result.testDate)}.${ext}`;
+    }
+
+    function buildResultPdfDoc(result) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const pageW = 210, marginX = 14, contentW = pageW - marginX * 2;
+        const pass = result.score >= 24;
+        const accent = pass ? [46, 125, 50] : [198, 40, 40];
+        const accentBg = pass ? [230, 244, 234] : [254, 246, 245];
+
+        doc.setFillColor(0, 102, 161);
+        doc.rect(0, 0, pageW, 24, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(16);
+        doc.text("ITV DRIVER EVALUATION TEST", marginX, 12);
+        doc.setFontSize(9.5);
+        doc.text("CSP Abu Dhabi Terminal - Safety & Operational Competency", marginX, 19);
+
+        let y = 34;
+        doc.setFillColor(240, 247, 252);
+        doc.roundedRect(marginX, y, contentW, 24, 3, 3, 'F');
+        doc.setFontSize(9.5);
+        const infoY1 = y + 9, infoY2 = y + 18;
+        const col2X = marginX + contentW / 2;
+
+        const drawLabelValue = (label, value, x, ly) => {
+            doc.setTextColor(0, 90, 140);
+            doc.setFont(undefined, 'bold');
+            doc.text(label, x, ly);
+            const labelW = doc.getTextWidth(label + " ");
+            doc.setTextColor(30, 42, 58);
+            doc.setFont(undefined, 'normal');
+            doc.text(String(value), x + labelW, ly);
+        };
+        drawLabelValue("Driver Name:", result.driverName, marginX + 6, infoY1);
+        drawLabelValue("Company Name:", result.companyName, col2X, infoY1);
+        drawLabelValue("Employee ID:", result.empId, marginX + 6, infoY2);
+        drawLabelValue("Test Date:", formatDMY(result.testDate), col2X, infoY2);
+
+        y += 32;
+        doc.setFillColor(...accentBg);
+        doc.roundedRect(marginX, y, contentW, 26, 3, 3, 'F');
+        doc.setFillColor(...accent);
+        doc.rect(marginX, y, 2.2, 26, 'F');
+
+        doc.setTextColor(10, 47, 68);
+        doc.setFontSize(13);
+        doc.setFont(undefined, 'bold');
+        doc.text(`Score: ${result.score} / ${result.total}  (${result.percent.toFixed(1)}%)`, marginX + 8, y + 10);
+
+        doc.setTextColor(...accent);
+        doc.setFontSize(12);
+        doc.text(result.statusMsg, marginX + 8, y + 18);
+
+        y += 36;
+        doc.setTextColor(0, 76, 110);
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text("Question Detail", marginX, y);
+        y += 7;
+
+        result.rows.forEach(r => {
+            const isCorrect = r["Result"] === "Correct";
+            const rowAccent = isCorrect ? [46, 125, 50] : [198, 40, 40];
+            const rowBg = isCorrect ? [230, 244, 234] : [254, 246, 245];
+
+            doc.setFontSize(9);
+            const qLine = doc.splitTextToSize(`Q${r["Q#"]}: ${r["Question"]}`, contentW - 10);
+            const ansLine = doc.splitTextToSize(`Answer: ${r["Driver Answer"]}   |   Correct: ${r["Correct Answer"]}`, contentW - 10);
+            const boxH = 5 + qLine.length * 4.6 + ansLine.length * 4.6 + 4;
+
+            if (y + boxH > 285) { doc.addPage(); y = 18; }
+
+            doc.setFillColor(...rowBg);
+            doc.roundedRect(marginX, y, contentW, boxH, 2, 2, 'F');
+            doc.setFillColor(...rowAccent);
+            doc.rect(marginX, y, 1.8, boxH, 'F');
+
+            doc.setTextColor(10, 47, 68);
+            doc.setFont(undefined, 'bold');
+            doc.text(qLine, marginX + 6, y + 6);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(40, 55, 70);
+            doc.text(ansLine, marginX + 6, y + 6 + qLine.length * 4.6);
+
+            y += boxH + 3;
+        });
+
+        return doc;
+    }
+
+    /* Generates the PDF, downloads it locally, then posts it to the Google Apps
+       Script so it is logged to the shared Sheet AND emailed as a real attachment.
+       (The previous EmailJS setup only sent a text summary - no PDF was attached.) */
+    function exportAndSubmit(result) {
+        let doc, filename;
+        try {
+            doc = buildResultPdfDoc(result);
+            filename = buildFileName(result, "pdf");
+            doc.save(filename);
+        } catch (err) {
+            console.error("PDF generation failed:", err);
+            showExportStatus("⚠️ PDF could not be generated: " + err.message, "error");
+            return;
+        }
+
+        let pdfBase64;
+        try {
+            pdfBase64 = doc.output('datauristring').split(',')[1];
+        } catch (err) {
+            console.error("PDF encoding failed:", err);
+            showExportStatus("⚠️ PDF downloaded, but could not be prepared for sending.", "error");
+            return;
+        }
+
+        const payload = {
+            equipmentType: 'ITV Driver Test',
+            date: formatDMY(result.testDate),
+            time: new Date().toTimeString().substring(0, 5),
+            operatorOrIncharge: result.driverName,
+            reference: result.empId,
+            statusSummary: `${result.statusMsg} - ${result.score}/${result.total} (${result.percent.toFixed(1)}%)`,
+            comments: `Company: ${result.companyName}`,
+            filename: filename,
+            pdfBase64: pdfBase64
+        };
+
+        showExportStatus("📤 PDF downloaded. Submitting result...", "pending");
+
+        fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            showExportStatus("✅ PDF downloaded and result submitted - the report will be emailed shortly.", "success");
+        }).catch(() => {
+            showExportStatus("⚠️ PDF saved locally, but the result could not be submitted (check your connection).", "error");
+        });
+    }
+
+    function showExportStatus(message, type) {
+        const el = document.getElementById('exportStatus');
+        el.style.display = 'block';
+        el.className = 'export-status ' + type;
+        el.textContent = message;
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', () => {
+        const name = document.getElementById('driverName').value.trim();
+        if (name === "") { alert("Please enter Driver Name before submitting."); return; }
+        gradeTest();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        document.getElementById('resultArea').style.display = 'none';
+        document.getElementById('exportStatus').style.display = 'none';
+        initNewQuiz();
+    });
+
+    if (document.getElementById('testDate')) {
+        document.getElementById('testDate').value = new Date().toISOString().split('T')[0];
+    }
+
+    initNewQuiz();
+</script>
+</body>
+</html>
