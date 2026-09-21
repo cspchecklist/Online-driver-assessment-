@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>ITV Driver Evaluation Test | CSP Abu Dhabi Terminal</title>
+
+    <!-- PWA: installable, full-screen, home-screen icon -->
+    <link rel="manifest" href="itv-manifest.json">
+    <meta name="theme-color" content="#003057">
+    <link rel="icon" type="image/png" href="itv-icon-192.png">
+    <link rel="apple-touch-icon" href="itv-icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ITV Driver Test">
+    <meta name="mobile-web-app-capable" content="yes">
+
     <style>
         * { box-sizing: border-box; }
         body {
@@ -1022,6 +1033,16 @@
     }
 
     initNewQuiz();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('itv-sw.js').catch(function (err) {
+        console.error('Service worker registration failed:', err);
+      });
+    });
+  }
 </script>
 </body>
 </html>
