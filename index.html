@@ -103,6 +103,16 @@
             border-color: #2e7d32;
             color: #2e7d32;
         }
+        .nav-btn.correct {
+            background: #2e7d32;
+            border-color: #1b5e20;
+            color: #ffffff;
+        }
+        .nav-btn.incorrect {
+            background: #c62828;
+            border-color: #8e0000;
+            color: #ffffff;
+        }
         .question-card {
             background: #ffffff;
             border: 1px solid #e2edf7;
@@ -147,6 +157,20 @@
         }
         .option input { margin-top: 3px; transform: scale(1.05); accent-color: #0066a1; }
         .option label { font-weight: normal; color: #1f3b4c; }
+        .option.correct-answer {
+            background: #e6f4ea;
+            border: 1.5px solid #2e7d32;
+            border-radius: 10px;
+            padding: 8px 10px;
+        }
+        .option.correct-answer label { color: #1b5e20; font-weight: 700; }
+        .option.wrong-answer {
+            background: #fdecea;
+            border: 1.5px solid #c62828;
+            border-radius: 10px;
+            padding: 8px 10px;
+        }
+        .option.wrong-answer label { color: #b71c1c; font-weight: 700; }
         /* FIX: 16px minimum on the fill-in-the-blank field too */
         .fill-input {
             width: 100%;
@@ -322,7 +346,7 @@
 
     /* Google Apps Script endpoint - same one used by the equipment checklists.
        Results are logged to the shared Sheet and emailed with the PDF attached. */
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzrsHaLTTAGc43bJq2fjWIWRCnG0Nu6zwoUSyw6hP9K8S6XOOmS5mZspUkgF8It2eq2/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw3HjHz8pbMpcgp4HROqfxpBbS1h2FD2CArXe6S97rhL6H2hLRHGQBt__WktY4-nhmi/exec';
 
     const baseQuestionsBank = [
         { textEng: "1) What is the allowed maximum speed limit inside the CSP Terminal?", textUrdu: "CSP ٹرمینل کے اندر اجازت کی زیادہ سے زیادہ رفتار کی حد کیا ہے؟", textHindi: "सीएसपी टर्मिनल के अंदर अनुमत अधिकतम गति सीमा क्या है?", options: ["20 KMPH", "15 KMPH", "30 KMPH"], correct: "c", type: "mcq" },
@@ -352,8 +376,6 @@
         { textEng: "25) Which control is used to disengage the fifth wheel from its lock position and disconnect the trailer from the ITV?", textUrdu: "کون سا کنٹرول فِفتھ وہیل کو لاک پوزیشن سے الگ کرنے اور ٹریلر کو ITV سے منقطع کرنے کے لیے استعمال ہوتا ہے؟", textHindi: "पांचवें पहिये को उसकी लॉक स्थिति से अलग करने और ट्रेलर को आईटीवी से डिस्कनेक्ट करने के लिए किस नियंत्रण का उपयोग किया जाता है?", options: ["Emergency button", "Fifth wheel release button", "Horn button"], correct: "b", type: "mcq" },
         { textEng: "26) Basic required P.P.E. are hard helmets, high-visibility vests, safety shoes, and safety gloves. Statement correct?", textUrdu: "بنیادی مطلوبہ P.P.E. سخت ہیلمٹ، ہائی ویزبیلیٹی واسکٹ، سیفٹی جوتے اور سیفٹی دستانے ہیں۔ کیا بیان صحیح ہے؟", textHindi: "बुनियादी आवश्यक पी.पी.ई. कठोर हेलमेट, उच्च दृश्यता वाले जैकेट, सुरक्षा जूते और सुरक्षा दस्ताने हैं।", options: ["Not correct", "Correct", "Maybe"], correct: "b", type: "mcq" },
         { textEng: "27) QC and ARMG CPS indication lights will turn to what colour once the ITV arrives at the correct lane position?", textUrdu: "ITV کے صحیح لین پوزیشن پر پہنچنے پر QC اور ARMG CPS انڈیکیشن لائٹس کس رنگ میں بدل جائیں گی؟", textHindi: "आईटीवी के सही लेन स्थिति पर पहुंचने पर क्यूसी और एआरएमजी सीपीएस इंडिकेशन लाइटें किस रंग में बदल जाएंगी?", options: ["Orange", "Green", "Red"], correct: "c", type: "mcq" },
-        { textEng: "28) Please fill in the correct yard location/yard area for offloading OOG cargo:", textUrdu: "براہ کرم OOG کارگو آف لوڈنگ کے لیے صحیح یارڈ لوکیشن/یارڈ ایریا لکھیں:", textHindi: "कृपया ओओजी कार्गो उतारने के लिए सही यार्ड स्थान/यार्ड क्षेत्र भरें:", options: [], correct: "E2, E3, A9-D9", type: "fill" },
-        { textEng: "29) Please fill in the correct yard location for Container repair area and Container washing:", textUrdu: "کنٹینر مرمت کے علاقے اور کنٹینر واشنگ کے لیے صحیح یارڈ لوکیشن لکھیں:", textHindi: "कंटेनर मरम्मत क्षेत्र और कंटेनर धुलाई के लिए सही यार्ड स्थान भरें:", options: [], correct: "Maintenance and Repair Area (MNR)", type: "fill" },
         { textEng: "30) Who will you contact immediately in the event of any emergencies encountered (e.g. fire, first aid, vehicle collision, etc.) inside the terminal?", textUrdu: "ٹرمینل کے اندر کسی بھی ہنگامی صورت حال (مثلاً آگ لگنے، ابتدائی طبی امداد، گاڑی کا تصادم وغیرہ) کی صورت میں آپ فوری طور پر کس سے رابطہ کریں گے؟", textHindi: "टर्मिनल के अंदर किसी भी आपात स्थिति (जैसे आग, प्राथमिक चिकित्सा, वाहन टकराव, आदि) की स्थिति में आप तुरंत किससे संपर्क करेंगे?", options: ["Control Room", "ITV Supervisor", "Stevedoring Supervisor"], correct: "a", type: "mcq" },
         { textEng: "31) During twin-lift operations (handling two 20-foot containers simultaneously), what is the mandatory safety rule regarding twistlock engagement before the ITV moves away from the QC lane?", textUrdu: "ٹوئن لفٹ آپریشنز کے دوران (ایک ہی وقت میں دو 20 فٹ کنٹینرز کو سنبھالنا)، ITV کے QC لین سے ہٹنے سے پہلے ٹوئسٹ لاک کے بارے میں لازمی حفاظتی اصول کیا ہے؟", textHindi: "ट्विन-लिफ्ट संचालन के दौरान (एक साथ दो 20-फुट कंटेनरों को संभालना), आईटीवी के क्यूसी लेन से दूर जाने से पहले ट्विस्टलॉक जुड़ाव के संबंध में अनिवार्य सुरक्षा नियम क्या है?", options: ["Ensure both containers are fully seated and clear of twistlocks before moving.", "Move immediately if one container is detached to save cycle time.", "Only check the twistlocks if the VMT displays an error code."], correct: "a", type: "mcq" },
         { textEng: "32) If the QC spreader becomes jammed or stuck to the container twistlocks while landing on your ITV chassis, what action must you take?", textUrdu: "اگر QC اسپریڈر آپ کے ITV چیسیس پر اترتے وقت جام ہو جائے یا کنٹینر کے ٹوئسٹ لاک میں پھنس جائے، تو آپ کو کیا قدم اٹھانا چاہیے؟", textHindi: "यदि आपके आईटीवी चेसिस पर उतरते समय क्यूसी स्प्रेडर जाम हो जाता है या कंटेनर ट्विस्टलॉक में फंस जाता है, तो आपको क्या कार्रवाई करनी चाहिए?", options: ["Drive forward slowly to force-release the container.", "Honk your horn continuously and try to manually unlock it yourself.", "Remain in position, keep brakes applied, and immediately notify the QC operator and ITV supervisor via VHF."], correct: "c", type: "mcq" },
@@ -503,6 +525,7 @@
             btn.type = 'button';
             btn.className = 'nav-btn';
             btn.textContent = idx + 1;
+            btn.dataset.qidx = idx;
 
             if (userAnswers[idx] !== undefined && userAnswers[idx] !== "") {
                 btn.classList.add('answered');
@@ -680,6 +703,38 @@
         return rule ? rule(ans) : false;
     }
 
+    /* Post-submission review colouring: correct answer highlighted green,
+       the driver's wrong pick highlighted red — applied to both the main
+       question sheet and the quick-navigation palette. */
+    function highlightAnswers() {
+        questionsData.forEach((q, idx) => {
+            const userAns = (userAnswers[idx] || '').trim();
+            const isCorrect = isAnswerCorrect(q, userAns);
+
+            const navBtn = document.querySelector(`.nav-btn[data-qidx='${idx}']`);
+            if (navBtn) {
+                navBtn.classList.remove('answered');
+                navBtn.classList.add(isCorrect ? 'correct' : 'incorrect');
+            }
+
+            if (q.type === 'mcq') {
+                const letters = ['a', 'b', 'c'];
+                letters.forEach(letter => {
+                    const optionInput = document.getElementById(`q${idx}_${letter}`);
+                    if (!optionInput) return;
+                    const optionRow = optionInput.closest('.option');
+                    if (!optionRow) return;
+                    optionRow.classList.remove('correct-answer', 'wrong-answer');
+                    if (letter === q.correct.toLowerCase()) {
+                        optionRow.classList.add('correct-answer');
+                    } else if (letter === userAns.toLowerCase() && !isCorrect) {
+                        optionRow.classList.add('wrong-answer');
+                    }
+                });
+            }
+        });
+    }
+
     function gradeTest() {
         isTestActive = false;
         clearInterval(timerInterval);
@@ -747,6 +802,8 @@
             `;
             localStorage.removeItem('itv_status_' + empId);
         }
+
+        highlightAnswers();
 
         document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
@@ -832,8 +889,8 @@
 
         result.rows.forEach(r => {
             const isCorrect = r["Result"] === "Correct";
-            const rowAccent = isCorrect ? [46, 125, 50] : [198, 40, 40];
-            const rowBg = isCorrect ? [230, 244, 234] : [254, 246, 245];
+            const rowAccent = isCorrect ? [46, 125, 50] : [117, 117, 117];
+            const rowBg = isCorrect ? [230, 244, 234] : [242, 242, 242];
 
             doc.setFontSize(9);
             const qLine = doc.splitTextToSize(`Q${r["Q#"]}: ${r["Question"]}`, contentW - 10);
